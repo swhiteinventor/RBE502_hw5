@@ -9,7 +9,7 @@ function [ dx ] = inverseDC( t, x, param )
 
     % note x is in the form of q_1, q_2,dot q_1, dot q_2
     vec_t = [1; t; t^2; t^3]; % cubic polynomials
-    theta_d= [a1'*vec_t; a2'*vec_t];
+    theta_d = [a1'*vec_t; a2'*vec_t];
     %ref = [ref,theta_d];
     % compute the velocity and acceleration in both theta 1 and theta2.
     a1_vel = [a1(2), 2*a1(3), 3*a1(4), 0];
@@ -20,8 +20,8 @@ function [ dx ] = inverseDC( t, x, param )
     % compute the desired trajectory (assuming 3rd order polynomials for trajectories)
     dtheta_d =[a1_vel*vec_t; a2_vel* vec_t];
     ddtheta_d =[a1_acc*vec_t; a2_acc* vec_t];
-    theta= x(1:2,1);
-    dtheta= x(3:4,1);
+    theta = x(1:2,1);
+    dtheta = x(3:4,1);
 
     a = I1+I2*t+m1*r1^2+ m2*(l1^2+ r2^2);
     b = m2*l1*r2;
@@ -55,8 +55,8 @@ kd = [100 0,
       0  100];
 
 %calculate error
-e = theta - dtheta;
-e_dot = dtheta_d - ddtheta_d;
+e = theta - theta_d;
+e_dot = dtheta - dtheta_d;
 
 %{
 e = [(x(1) - xf(1)),

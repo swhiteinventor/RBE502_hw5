@@ -5,7 +5,7 @@ function [ dx ] = inverseDC( t, x, param )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-    [g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:})
+    [g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:});
 
     % note x is in the form of q_1, q_2,dot q_1, dot q_2
     vec_t = [1; t; t^2; t^3]; % cubic polynomials
@@ -26,6 +26,7 @@ function [ dx ] = inverseDC( t, x, param )
     a = I1+I2*t+m1*r1^2+ m2*(l1^2+ r2^2);
     b = m2*l1*r2;
     d = I2+ m2*r2^2;
+    
     % the actual dynamic model of the system:
     Mmat = [a+2*b*cos(x(2)), d+b*cos(x(2));  d+b*cos(x(2)), d];
     Cmat = [-b*sin(x(2))*x(4), -b*sin(x(2))*(x(3)+x(4)); b*sin(x(2))*x(3),0];
@@ -54,11 +55,16 @@ kd = [100 0,
       0  100];
 
 %calculate error
+e = theta - dtheta;
+e_dot = dtheta_d - ddtheta_d;
+
+%{
 e = [(x(1) - xf(1)),
      (x(2) - xf(2))];
  
 e_dot = [(x(3)- xf(3)),
          (x(4)- xf(4))];
+%}
 
 %controller
 u = zeros(2,1);

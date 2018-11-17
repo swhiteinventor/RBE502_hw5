@@ -17,7 +17,7 @@ x0 = [-0.5,0.2,0.1,0.1];
 xf = [0, 0, 0, 0];
 
 %final time
-tf = 10;
+tf = 100;
 
 %no figure?
 nofigure = 1;

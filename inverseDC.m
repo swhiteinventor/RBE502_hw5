@@ -1,4 +1,9 @@
 %% Creates the ODE function for a two link planar arm tracking a cubic polynomial trajectory by inverse dynamic control
+%For an n-link serial robot, the format for calculating the dx is:
+%dx = Ax + Bu
+%u = -kp*e -kd*e_dot
+%A = [0 In, 0  0]
+%B = [0, In]
 
 function [ dx ] = inverseDC( t, x, param )
 %% inputs
@@ -58,7 +63,7 @@ u = -kp*e - kd*e_dot;
 
 %calculate impact
 q_dot_dot = zeros(2,1);
-q_dot_dot = invM*u - invMC*u;
+q_dot_dot = invM*u - invMC*u; %TODO: should gravity (Gmat) be accounted for?
 
 %final outputs
 dx(1) = x(3,1);

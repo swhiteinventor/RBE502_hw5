@@ -97,28 +97,36 @@ hold on
 options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
 [T,X] = ode45(@(t,x) lyapunovCtrl(t, x, param),[0 tf],x0, options);
 
-% plotting
-figure('Name','Theta_1 under inverse dynamic control');
+%plotting
+figure('Name','Theta_1 under lyapunov-based control');
 plot(T, X(:,1),'r-');
-title('Theta 1 under inverse dynamic control')
+title('Theta 1 under lyapunov-based control')
 xlabel('Time (s)')
 ylabel('Theta 1 (radians)')
 hold on
  
-figure('Name','Theta_2 under inverse dynamic control');
+figure('Name','Theta_2 under lyapunov-based control');
 plot(T, X(:,2),'r--');
-title('Theta 2 under inverse dynamic control')
+title('Theta 2 under lyapunov-based control')
 xlabel('Time (s)')
 ylabel('Theta 2 (radians)')
-hold on  
+hold on 
 
 %% Implement the passivity-based control
 %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-%[T,X] = ode45(@(t,x) passivityCtrl(t,x),[0 tf],x0, options);
+[T,X] = ode45(@(t,x) passivityCtrl(t,x),[0 tf],x0, options);
 
-% figure('Name','Theta_1 under lyapunov-based control');
-% plot(T, X(:,1),'r-');
-% hold on
-% figure('Name','Theta_2 under  lyapunov-basedcontrol');
-% plot(T, X(:,2),'r--');
-% hold on
+%plotting
+figure('Name','Theta_1 under passivity-based control');
+plot(T, X(:,1),'r-');
+title('Theta 1 under passivity-based control')
+xlabel('Time (s)')
+ylabel('Theta 1 (radians)')
+hold on
+ 
+figure('Name','Theta_2 under passivity-based control');
+plot(T, X(:,2),'r--');
+title('Theta 2 under passivity-based control')
+xlabel('Time (s)')
+ylabel('Theta 2 (radians)')
+hold on 

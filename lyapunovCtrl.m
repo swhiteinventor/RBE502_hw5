@@ -1,11 +1,11 @@
-%% Creates the ODE function for a two link planar arm tracking a cubic polynomial trajectory by inverse dynamic control
+%% Creates the ODE function for a two link planar arm tracking a cubic polynomial trajectory by ilyapunov-based control
 %For an n-link serial robot, the format for calculating the dx is:
 %dx = Ax + Bu
 %u = -kp*e -kd*e_dot
 %A = [0 In, 0  0]
 %B = [0, In]
 
-function [ dx ] = inverseDC( t, x, param)
+function [ dx ] = lyapunovCtrl( t, x, param)
 %% inputs
 [g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:});
 
@@ -46,7 +46,7 @@ invMC = invM*Cmat;
 %initialize output of function
 dx = zeros(4,1);
 
-%% inverse dynamic ccontroller
+%% ilyapunov-based ccontroller
 %gain constants, positive definite diagonal matrices
 kp = [150 0
     0 150];

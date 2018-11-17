@@ -1,11 +1,11 @@
-function [ dx ] = inverseDC( t, x, g, param )
+function [ dx ] = inverseDC( t, x, param )
 %param should include: a1, a2 (trajectory parameters),
 %m1,m2,I1,I2,l1,l2,r1,r2 (system parameters);
 
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-    [a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:})
+    [g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:})
 
     % note x is in the form of q_1, q_2,dot q_1, dot q_2
     vec_t = [1; t; t^2; t^3]; % cubic polynomials
@@ -36,12 +36,42 @@ function [ dx ] = inverseDC( t, x, g, param )
 
     % TODO: compute the control input for the system, which
     % should provide the torques
-    u = 0
+    % u = 0
     % use the computed torque and state space model to compute
     % the increment in state vector.
     %TODO: compute dx = f(x,u) hint dx(1)=x(3); dx(2)= x(4); the rest
     %of which depends on the dynamic model of the robot.
 
+    %% outputs
+%initialize output of function
+dx = zeros(4,1);
 
+%% controller
+%gain constants, positive definite diagonal matrices
+kp = [150 0
+      0 150];
+kd = [100 0,
+      0  100];
+
+%calculate error
+e = [(x(1) - xf(1)),
+     (x(2) - xf(2))];
+ 
+e_dot = [(x(3)- xf(3)),
+         (x(4)- xf(4))];
+
+%controller
+u = zeros(2,1);
+u = -kp*e - kd*e_dot;
+
+%calculate impact
+q_dot_dot = zeros(2,1);
+q_dot_dot = invM*u - invMC*u;
+
+%final outputs
+dx(1) = x(3,1);
+dx(2) = x(4,1);
+dx(3) = q_dot_dot(1);
+dx(4) = q_dot_dot(2);
 end
 

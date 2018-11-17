@@ -44,7 +44,7 @@ invM = inv(M);
 invMC= inv(M)*C;
 
 % the options for ode
-param = {a1, a2, m1, m2, I1, I2, l1, l2, r1, r2};
+param = {g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2};
 
 %% Implement the PD+ GRAVITY COMPENSATION control for set point tracking.
 %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
@@ -75,14 +75,23 @@ param = {a1, a2, m1, m2, I1, I2, l1, l2, r1, r2};
 %% TODO: GENERATE TRAJECTORY USING TwoLinkArmTraj matlab file.
 %% Implement the inverse dynamic control
 options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-[T,X] = ode45(@(t,x) inverseDC(t, x, g, param),[0 tf],x0, options);
+[T,X] = ode45(@(t,x) inverseDC(t, x, param),[0 tf],x0, options);
 
-% figure('Name','Theta_1 under inverse dynamic control');
-% plot(T, X(:,1),'r-');
-% hold on
-% figure('Name','Theta_2 under inverse dynamic control');
-% plot(T, X(:,2),'r--');
-% hold on
+%% plotting the results
+figure('Name','Theta_1 under inverse dynamic control');
+plot(T, X(:,1),'r-');
+title('Theta 1 under inverse dynamic control')
+xlabel('Time (s)')
+ylabel('Theta 1 (radians)')
+hold on
+ 
+figure('Name','Theta_2 under inverse dynamic control');
+plot(T, X(:,2),'r--');
+title('Theta 2 under inverse dynamic control')
+xlabel('Time (s)')
+ylabel('Theta 2 (radians)')
+hold on  
+
 
 %% Implement the lyapunov-based control
 %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);

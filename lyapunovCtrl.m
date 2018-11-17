@@ -47,23 +47,33 @@ invMC = invM*Cmat;
 dx = zeros(4,1);
 
 %% ilyapunov-based ccontroller
-%gain constants, positive definite diagonal matrices
-kp = [150 0
-    0 150];
-kd = [100 0,
-    0  100];
 
-%calculate error
+%gain constant, positive definite matrix
+kd = [5 0; ...
+      0 5];
+  
+%constant, positive definite square matrices
+capital_lambda = [5 0; ...
+                  0 5];
+
+%calculate tracking error
 e = theta - theta_d;
 e_dot = dtheta - dtheta_d;
+              
+%si calculation
+si = dtheta_d - capital_lambda*e;
+
+%sigma calculation
+I = eye(2,2);
+sigma = I*e_dot + capital_lambda*e;
 
 %controller
 u = zeros(2,1);
-u = -kp*e - kd*e_dot;
+u = Mmat*diff(diff(si)) + C*diff(si) + Gmat - kd*sigma;
 
 %calculate impact
 q_dot_dot = zeros(2,1);
-q_dot_dot = invM*u - invMC*u; %TODO: should gravity (Gmat) be accounted for?
+q_dot_dot = - invMC(q_dot - dif(si)) - invM*kd*sigma + dif(dif(si));
 
 %final outputs
 dx(1) = x(3,1);

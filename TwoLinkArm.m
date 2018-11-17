@@ -71,7 +71,7 @@ param = {g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2};
 % plot(T, X(:,2),'r--');
 % hold on
 
-
+%{
 %% TODO: GENERATE TRAJECTORY USING TwoLinkArmTraj matlab file.
 %% Implement the inverse dynamic control
 options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
@@ -91,7 +91,7 @@ title('Theta 2 under inverse dynamic control')
 xlabel('Time (s)')
 ylabel('Theta 2 (radians)')
 hold on  
-
+%}
 
 %% Implement the lyapunov-based control
 options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
@@ -111,7 +111,7 @@ title('Theta 2 under lyapunov-based control')
 xlabel('Time (s)')
 ylabel('Theta 2 (radians)')
 hold on 
-
+%{
 %% Implement the passivity-based control
 %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
 [T,X] = ode45(@(t,x) passivityCtrl(t,x),[0 tf],x0, options);
@@ -130,3 +130,4 @@ title('Theta 2 under passivity-based control')
 xlabel('Time (s)')
 ylabel('Theta 2 (radians)')
 hold on 
+%}

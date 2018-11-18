@@ -26,108 +26,72 @@ nofigure = 1;
 a1 = TwoLinkArmTraj(x0(1), x0(3), xf(1), xf(3), tf, nofigure);
 a2 = TwoLinkArmTraj(x0(2), x0(4), xf(2), xf(4), tf, nofigure);
 
-%% Example to show computing the symbolic expression of M and C. But not needed later as subs() function in matlab extremely slow.
-% create symbolic variable for x.
-% x1 - theta1
-% x2 - theta2
-
-symx= sym('symx',[4,1]);
-
-M = [a+2*b*cos(symx(2)), d+b*cos(symx(2));
-    d+b*cos(symx(2)), d];
-C = [-b*sin(symx(2))*symx(4), -b*sin(symx(2))*(symx(3)+symx(4)); b*sin(symx(2))*symx(3),0];
-G = [m1*g*r1*cos(symx(1))+m2*g*(l1*cos(symx(1))+r2*cos(symx(1)+symx(2)));
-    m2*g*r2*cos(symx(1)+symx(2))];
-
-
-invM = inv(M);
-invMC= inv(M)*C;
-
 % the options for ode
 param = {g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2};
 
-%% Implement the PD+ GRAVITY COMPENSATION control for set point tracking.
-%options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-%[T,X] = ode45(@(t,x) PDControlGravity(t,x),[0 tf],x0, options);
+inverseDC = true;
+lyapunov = false;
+passivity = false;
 
-%
-% figure('Name','Theta_1 under PD SetPoint Control');
-% plot(T, X(:,1),'r-');
-% hold on
-%
-% figure('Name','Theta_2 under PD SetPoint Control');
-% plot(T, X(:,2),'r--');
-% hold on
+if inverseDC
+    %% TODO: GENERATE TRAJECTORY USING TwoLinkArmTraj matlab file.
+    %% Implement the inverse dynamic control
+    options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
+    [T,X] = ode45(@(t,x) inverseDC(t, x, param),[0 tf],x0, options);
 
+    %plotting
+    figure('Name','Theta_1 under inverse dynamic control');
+    plot(T, X(:,1),'r-');
+    title('Theta 1 under inverse dynamic control')
+    xlabel('Time (s)')
+    ylabel('Theta 1 (radians)')
+    hold on
 
-%% Implement the iterative learning control (assume no knowledge about the dynamic model).
-%options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-%[T,X] = ode45(@(t,x) ILCtrl(t,x),[0 tf],x0, options);
+    figure('Name','Theta_2 under inverse dynamic control');
+    plot(T, X(:,2),'r--');
+    title('Theta 2 under inverse dynamic control')
+    xlabel('Time (s)')
+    ylabel('Theta 2 (radians)')
+    hold on
+end
+if lyapunov
+    %% Implement the lyapunov-based control
+    options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
+    [T,X] = ode45(@(t,x) lyapunovCtrl(t, x, param),[0 tf],x0, options);
 
-% figure('Name','Theta_1 under iterative learning control');
-% plot(T, X(:,1),'r-');
-% hold on
-% figure('Name','Theta_2 under iterative learning control');
-% plot(T, X(:,2),'r--');
-% hold on
+    %plotting
+    figure('Name','Theta_1 under lyapunov-based control');
+    plot(T, X(:,1),'r-');
+    title('Theta 1 under lyapunov-based control')
+    xlabel('Time (s)')
+    ylabel('Theta 1 (radians)')
+    hold on
 
-%{
-%% TODO: GENERATE TRAJECTORY USING TwoLinkArmTraj matlab file.
-%% Implement the inverse dynamic control
-options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-[T,X] = ode45(@(t,x) inverseDC(t, x, param),[0 tf],x0, options);
+    figure('Name','Theta_2 under lyapunov-based control');
+    plot(T, X(:,2),'r--');
+    title('Theta 2 under lyapunov-based control')
+    xlabel('Time (s)')
+    ylabel('Theta 2 (radians)')
+    hold on
+end
 
-%plotting
-figure('Name','Theta_1 under inverse dynamic control');
-plot(T, X(:,1),'r-');
-title('Theta 1 under inverse dynamic control')
-xlabel('Time (s)')
-ylabel('Theta 1 (radians)')
-hold on
- 
-figure('Name','Theta_2 under inverse dynamic control');
-plot(T, X(:,2),'r--');
-title('Theta 2 under inverse dynamic control')
-xlabel('Time (s)')
-ylabel('Theta 2 (radians)')
-hold on  
-%}
+if passivity
+    %% Implement the passivity-based control
+    %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
+    [T,X] = ode45(@(t,x) passivityCtrl(t,x),[0 tf],x0, options);
 
-%% Implement the lyapunov-based control
-options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-[T,X] = ode45(@(t,x) lyapunovCtrl(t, x, param),[0 tf],x0, options);
+    %plotting
+    figure('Name','Theta_1 under passivity-based control');
+    plot(T, X(:,1),'r-');
+    title('Theta 1 under passivity-based control')
+    xlabel('Time (s)')
+    ylabel('Theta 1 (radians)')
+    hold on
 
-%plotting
-figure('Name','Theta_1 under lyapunov-based control');
-plot(T, X(:,1),'r-');
-title('Theta 1 under lyapunov-based control')
-xlabel('Time (s)')
-ylabel('Theta 1 (radians)')
-hold on
- 
-figure('Name','Theta_2 under lyapunov-based control');
-plot(T, X(:,2),'r--');
-title('Theta 2 under lyapunov-based control')
-xlabel('Time (s)')
-ylabel('Theta 2 (radians)')
-hold on 
-%{
-%% Implement the passivity-based control
-%options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
-[T,X] = ode45(@(t,x) passivityCtrl(t,x),[0 tf],x0, options);
-
-%plotting
-figure('Name','Theta_1 under passivity-based control');
-plot(T, X(:,1),'r-');
-title('Theta 1 under passivity-based control')
-xlabel('Time (s)')
-ylabel('Theta 1 (radians)')
-hold on
- 
-figure('Name','Theta_2 under passivity-based control');
-plot(T, X(:,2),'r--');
-title('Theta 2 under passivity-based control')
-xlabel('Time (s)')
-ylabel('Theta 2 (radians)')
-hold on 
-%}
+    figure('Name','Theta_2 under passivity-based control');
+    plot(T, X(:,2),'r--');
+    title('Theta 2 under passivity-based control')
+    xlabel('Time (s)')
+    ylabel('Theta 2 (radians)')
+    hold on
+end

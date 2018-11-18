@@ -48,10 +48,10 @@ dx = zeros(4,1);
 
 %% inverse dynamic ccontroller
 %gain constants, positive definite diagonal matrices
-kp = [150 0
-    0 150];
-kd = [100 0,
-    0  100];
+kp = [1500 0
+    0 1500];
+kd = [1000 0,
+    0  1000];
 
 %calculate error
 e = theta - theta_d;
@@ -59,11 +59,11 @@ e_dot = dtheta - dtheta_d;
 
 %controller
 u = zeros(2,1);
-u = -kp*e - kd*e_dot;
+u = -kp*e - kd*e_dot ; %+ Gmat
 
 %calculate impact
 q_dot_dot = zeros(2,1);
-q_dot_dot = invM*u - invMC*u; %TODO: should gravity (Gmat) be accounted for?
+q_dot_dot = invM*u - invMC*u ; %- invM*Gmat
 
 %final outputs
 dx(1) = x(3,1);

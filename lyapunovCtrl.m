@@ -62,8 +62,8 @@ e_dot = dtheta - dtheta_d;
               
 %si calculation
 si = dtheta_d - capital_lambda*e;
-si_dot = diff(si);
-si_dot_dot = diff(si_dot);
+si_dot = ;
+si_dot_dot = ;
 
 %sigma calculation
 I = eye(2,2);

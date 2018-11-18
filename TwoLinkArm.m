@@ -1,4 +1,4 @@
-% Notations: For a given variable, x, dx is its time derivative, ddx is
+1% Notations: For a given variable, x, dx is its time derivative, ddx is
 % 2nd-order derivative.
 clc
 clear all;

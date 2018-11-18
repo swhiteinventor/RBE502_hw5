@@ -62,6 +62,8 @@ e_dot = dtheta - dtheta_d;
               
 %si calculation
 si = dtheta_d - capital_lambda*e;
+si_dot = diff(si);
+si_dot_dot = diff(si_dot);
 
 %sigma calculation
 I = eye(2,2);
@@ -69,11 +71,12 @@ sigma = I*e_dot + capital_lambda*e;
 
 %controller
 u = zeros(2,1);
-u = Mmat*diff(diff(si)) + C*diff(si) + Gmat - kd*sigma;
+u = Mmat*si_dot_dot + C*si_dot + Gmat - kd*sigma;
 
 %calculate impact
 q_dot_dot = zeros(2,1);
-q_dot_dot = - invMC(q_dot - dif(si)) - invM*kd*sigma + dif(dif(si));
+
+q_dot_dot = - invMC(q_dot - si_dot) - invM*kd*sigma + si_dot_dot);
 
 %final outputs
 dx(1) = x(3,1);

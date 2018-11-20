@@ -71,12 +71,11 @@ sigma = I*e_dot + capital_lambda*e;
 
 %controller
 u = zeros(2,1);
-u = Mmat*si_dot_dot + C*si_dot + Gmat - kd*sigma;
+u = Mmat*diff(diff(si)) + C*diff(si) + Gmat - kd*sigma;
 
 %calculate impact
 q_dot_dot = zeros(2,1);
-
-q_dot_dot = - invMC(q_dot - si_dot) - invM*kd*sigma + si_dot_dot);
+q_dot_dot = - invMC(q_dot - dif(si)) - invM*kd*sigma + dif(dif(si));
 
 %final outputs
 dx(1) = x(3,1);

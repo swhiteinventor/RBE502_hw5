@@ -5,9 +5,17 @@
 %A = [0 In, 0  0]
 %B = [0, In]
 
-function [ dx ] = passivityCtrl( t, x, param)
-%% inputs
-[g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:});
+function [ dx ] = passivityCtrl( t, x, a1, a2)
+%% constants
+
+% the following parameters for the arm
+I1=10;  I2 = 10; m1=5; r1=.5; m2=5; r2=.5; l1=1; l2=1;
+g=9.8;
+
+% we compute the parameters in the dynamic model
+a = I1+I2+m1*r1^2+ m2*(l1^2+ r2^2);
+b = m2*l1*r2;
+d = I2+ m2*r2^2;
 
 %% trajectory generation
 

@@ -5,9 +5,18 @@
 %A = [0 In, 0  0]
 %B = [0, In]
 
-function [ dx ] = inverseDC( t, x, param)
-%% inputs
-[g, x0, xf, a1, a2, m1, m2, I1, I2, l1, l2, r1, r2] = deal(param{:});
+function [ dx ] = inverseDC( t, x, x0, xf, a1, a2)
+
+%% constants
+
+% the following parameters for the arm
+I1=10;  I2 = 10; m1=5; r1=.5; m2=5; r2=.5; l1=1; l2=1;
+g=9.8;
+
+% we compute the parameters in the dynamic model
+a = I1+I2+m1*r1^2+ m2*(l1^2+ r2^2);
+b = m2*l1*r2;
+d = I2+ m2*r2^2;
 
 %% trajectory generation
 
@@ -37,14 +46,10 @@ d = I2+ m2*r2^2;
 % the actual dynamic model of the system:
 Mmat = [a+2*b*cos(x(2)), d+b*cos(x(2));  d+b*cos(x(2)), d];
 Cmat = [-b*sin(x(2))*x(4), -b*sin(x(2))*(x(3)+x(4)); b*sin(x(2))*x(3),0];
-Gmat =  [m1*g*r1*cos(x(1))+m2*g*(l1*cos(x(1))+r2*cos(x(1)+x(2)));
+Gmat = [m1*g*r1*cos(x(1))+m2*g*(l1*cos(x(1))+r2*cos(x(1)+x(2)));
     m2*g*r2*cos(x(1)+x(2))];
 invM = inv(Mmat);
 invMC = invM*Cmat;
-
-%% outputs
-%initialize output of function
-dx = zeros(4,1);
 
 %% inverse dynamic ccontroller
 %gain constants, positive definite diagonal matrices
@@ -57,19 +62,25 @@ kd = [1000 0,
 e = theta - theta_d;
 e_dot = dtheta - dtheta_d;
 
+%aq matrix
+aq_desired = ddtheta_d;
+aq = aq_desired - kp*e - kd*e_dot;
+
 %controller
 u = zeros(2,1);
-u = -kp*e - kd*e_dot ; %+ Gmat
+u = Mmat*aq + Cmat*theta_dot + Gmat;
 
 %calculate impact
-q_dot_dot = zeros(2,1);
-q_dot_dot = invM*u - invMC*u ; %- invM*Gmat
+theta_dot_dot = aq;
+
+%initialize output of function
+dx = zeros(4,1);
 
 %final outputs
 dx(1) = x(3,1);
 dx(2) = x(4,1);
-dx(3) = q_dot_dot(1);
-dx(4) = q_dot_dot(2);
-
+dx(3) = theta_dot_dot(1);
+dx(4) = theta_dot_dot(2);
+dx
 end
 

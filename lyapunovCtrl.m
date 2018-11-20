@@ -1,9 +1,4 @@
 %% Creates the ODE function for a two link planar arm tracking a cubic polynomial trajectory by lyapunov-based control
-%For an n-link serial robot, the format for calculating the dx is:
-%dx = Ax + Bu
-%u = -kp*e -kd*e_dot
-%A = [0 In, 0  0]
-%B = [0, In]
 
 function [ dx ] = lyapunovCtrl( t, x, a1, a2)
 %% constants
@@ -85,7 +80,7 @@ u = Mmat*si_dot_dot + Cmat*si_dot + Gmat - kd*sigma;
 theta_dot_dot = zeros(2,1);
 
 %theta_dot_dot = sigma_dot - si_dot_dot
-theta_dot_dot = - invMC*sigma - invM*kd*sigma + si_dot_dot;
+theta_dot_dot = invM*( u - Cmat*theta_dot - Gmat);
 
 %final outputs
 dx(1) = x(3,1);

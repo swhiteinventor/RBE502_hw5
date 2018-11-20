@@ -71,7 +71,7 @@ u = zeros(2,1);
 u = Mmat*aq + Cmat*theta_dot + Gmat;
 
 %calculate impact
-theta_dot_dot = aq;
+theta_dot_dot = invM*( u - Cmat*theta_dot - Gmat);
 
 %initialize output of function
 dx = zeros(4,1);

@@ -9,7 +9,7 @@ x0 = [-0.5,0.2,0.1,0.1];
 xf = [0, 0, 0, 0];
 
 %final time
-tf = 100;
+tf = 10;
 
 %no figure?
 nofigure = 1;
@@ -19,7 +19,7 @@ a1 = TwoLinkArmTraj(x0(1), x0(3), xf(1), xf(3), tf, nofigure);
 a2 = TwoLinkArmTraj(x0(2), x0(4), xf(2), xf(4), tf, nofigure);
 
 plot_inverseDC = true;
-plot_lyapunov = false;
+plot_lyapunov = true;
 plot_passivity = false;
 
 if plot_inverseDC

@@ -33,7 +33,7 @@ a2_acc = [2*a2(3), 6*a2(4),0,0 ];
 dtheta_d =[a1_vel*vec_t; a2_vel* vec_t];
 ddtheta_d =[a1_acc*vec_t; a2_acc* vec_t];
 theta = x(1:2,1);
-dtheta = x(3:4,1);
+theta_dot = x(3:4,1);
 
 %% planar arm dynamics
 
@@ -66,30 +66,32 @@ capital_lambda = [5 0; ...
 
 %calculate tracking error
 e = theta - theta_d;
-e_dot = dtheta - dtheta_d;
+e_dot = theta_dot - dtheta_d;
               
 %si calculation
-si = dtheta_d - capital_lambda*e;
-si_dot = ;
-si_dot_dot = ;
+si_dot = dtheta_d - capital_lambda*e;
+si_dot_dot = ddtheta_d - capital_lambda*e_dot;
 
 %sigma calculation
 I = eye(2,2);
-sigma = I*e_dot + capital_lambda*e;
+%sigma = I*e_dot + capital_lambda*e;
+sigma = theta_dot - si_dot;
 
 %controller
 u = zeros(2,1);
-u = Mmat*diff(diff(si)) + C*diff(si) + Gmat - kd*sigma;
+u = Mmat*si_dot_dot + Cmat*si_dot + Gmat - kd*sigma;
 
 %calculate impact
-q_dot_dot = zeros(2,1);
-q_dot_dot = - invMC(q_dot - dif(si)) - invM*kd*sigma + dif(dif(si));
+theta_dot_dot = zeros(2,1);
+
+%theta_dot_dot = sigma_dot - si_dot_dot
+theta_dot_dot = - invMC*sigma - invM*kd*sigma + si_dot_dot;
 
 %final outputs
 dx(1) = x(3,1);
 dx(2) = x(4,1);
-dx(3) = q_dot_dot(1);
-dx(4) = q_dot_dot(2);
+dx(3) = theta_dot_dot(1);
+dx(4) = theta_dot_dot(2);
 
 end
 

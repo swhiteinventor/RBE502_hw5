@@ -53,10 +53,10 @@ invMC = invM*Cmat;
 
 %% inverse dynamic ccontroller
 %gain constants, positive definite diagonal matrices
-kp = [1500 0
-    0 1500];
-kd = [1000 0,
-    0  1000];
+kp = [150 0
+    0 150];
+kd = [100 0,
+    0  100];
 
 %calculate error
 e = theta - theta_d;

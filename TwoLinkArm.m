@@ -18,8 +18,8 @@ a2 = TwoLinkArmTraj(x0(2), x0(4), xf(2), xf(4), tf, nofigure);
 
 x0  = [-0.6,0.4,0.15,0.05];
 
-plot_inverseDC = true;
-plot_lyapunov = false;
+plot_inverseDC = false;
+plot_lyapunov = true;
 plot_passivity = false;
 
 %% trajectory generation for plotting
@@ -48,18 +48,9 @@ if plot_inverseDC
     [T,X] = ode45(@(t,x) inverseDC(t, x, a1, a2), [0 tf], x0, options);
     
     %plotting
-    angle = 1;
-    control = 'Inverse Dynamic';
-    plotTrajectories(angle, control, time, trajectory(:,1), T, X(:,1));
+    plotTrajectories(1, 'Inverse Dynamic', time, trajectory(:,1), T, X(:,1));
+    plotTrajectories(2, 'Inverse Dynamic', time, trajectory(:,2), T, X(:,2));
     
-    figure('Name','Theta_2 Under Inverse Dynamic Control');
-    hold on
-    plot(time, trajectory(:,2), 'b', 'DisplayName', 'Desired Trajectory: Theta 2');
-    plot(T, X(:,2), 'r--', 'DisplayName', 'Tracked Trajectory: Theta 2');
-    title('Theta 2 under inverse dynamic control')
-    xlabel('Time (s)')
-    ylabel('Theta 2 (radians)')
-    legend;
 end
 if plot_lyapunov
     %% Implement the lyapunov-based control
@@ -67,19 +58,9 @@ if plot_lyapunov
     [T,X] = ode45(@(t,x) lyapunovCtrl(t, x, a1, a2),[0 tf],x0, options);
     
     %plotting
-    figure('Name','Theta_1 under lyapunov-based control');
-    plot(T, X(:,1),'r-');
-    title('Theta 1 under lyapunov-based control')
-    xlabel('Time (s)')
-    ylabel('Theta 1 (radians)')
-    hold on
+    plotTrajectories(1, 'lyapunov-based', time, trajectory(:,1), T, X(:,1));
+    plotTrajectories(2, 'lyapunov-based', time, trajectory(:,2), T, X(:,2));
     
-    figure('Name','Theta_2 under lyapunov-based control');
-    plot(T, X(:,2),'r--');
-    title('Theta 2 under lyapunov-based control')
-    xlabel('Time (s)')
-    ylabel('Theta 2 (radians)')
-    hold on
 end
 
 if plot_passivity
@@ -88,17 +69,7 @@ if plot_passivity
     [T,X] = ode45(@(t,x) passivityCtrl(t,x, a1, a2),[0 tf],x0, options);
     
     %plotting
-    figure('Name','Theta_1 under passivity-based control');
-    plot(T, X(:,1),'r-');
-    title('Theta 1 under passivity-based control')
-    xlabel('Time (s)')
-    ylabel('Theta 1 (radians)')
-    hold on
+    plotTrajectories(1, 'passivity-based', time, trajectory(:,1), T, X(:,1));
+    plotTrajectories(2, 'passivity-based', time, trajectory(:,2), T, X(:,2));
     
-    figure('Name','Theta_2 under passivity-based control');
-    plot(T, X(:,2),'r--');
-    title('Theta 2 under passivity-based control')
-    xlabel('Time (s)')
-    ylabel('Theta 2 (radians)')
-    hold on
 end

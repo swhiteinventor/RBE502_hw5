@@ -52,12 +52,12 @@ dx = zeros(4,1);
 %% ilyapunov-based ccontroller
 
 %gain constant, positive definite matrix
-kd = [5 0; ...
-      0 5];
+kd = [25 0; ...
+      0 25];
   
 %constant, positive definite square matrices
-capital_lambda = [5 0; ...
-                  0 5];
+capital_lambda = [10 0; ...
+                  0 10];
 
 %calculate tracking error
 e = theta - theta_d;

@@ -4,8 +4,8 @@
 
 function [ dx ] = passivityCtrl( t, x, a1, a2)
 
-%% Constants and Variables:
-% Sets A as the global A variable (the past joint accelerations):
+%% Constants and Variables
+% Sets _A_ as the global _A_ variable (the past joint accelerations):
 global A
 %% 
 % Set the parameters for the arm:
@@ -17,13 +17,15 @@ a = I1+I2+m1*r1^2+ m2*(l1^2+ r2^2);
 b = m2*l1*r2;
 d = I2+ m2*r2^2;
 
-%% Trajectory Generation:
+%% Trajectory Generation
 %% 
 % Note _x_ is in the form of _q1_, _q2_, _q1_dot_, _q2_dot_:
-vec_t = [1; t; t^2; t^3]; % cubic polynomials
+% 
+% Cubic polynomials:
+vec_t = [1; t; t^2; t^3];
 theta_d = [a1'*vec_t; a2'*vec_t];
 %%
-% Calculate the velocity and acceleration in both theta 1 and theta2:
+% Calculate the velocity and acceleration in both _theta 1_ and _theta 2_:
 a1_vel = [a1(2), 2*a1(3), 3*a1(4), 0];
 a1_acc = [2*a1(3), 6*a1(4),0,0 ];
 a2_vel = [a2(2), 2*a2(3), 3*a2(4), 0];
@@ -34,7 +36,7 @@ a2_acc = [2*a2(3), 6*a2(4),0,0 ];
 dtheta_d =[a1_vel*vec_t; a2_vel* vec_t];
 ddtheta_d =[a1_acc*vec_t; a2_acc* vec_t];
 %% 
-% set the current joint values:
+% Set the current joint values:
 theta = x(1:2,1);
 theta_dot = x(3:4,1);
 theta_dot_dot = A;
@@ -54,20 +56,16 @@ Gmat =  [m1*g*r1*cos(x(1))+m2*g*(l1*cos(x(1))+r2*cos(x(1)+x(2)));
 invM = inv(Mmat);
 invMC = invM*Cmat;
 
-%% Outputs
-% Initialize the output of the function:
-dx = zeros(4,1);
-
-%% Passivity-Based Controller:
-% Gain constant (positive definite matrix):
+%% Passivity-Based Controller
+% Set the _kv_ gain constant (positive definite matrix):
 kv = [25 0; ...
       0 25];
 %%   
-% Constant (positive definite square matrices):
+% Set the _capital_lambda_ constant (positive definite square matrices):
 capital_lambda = [10 0; ...
                   0 10];
 %% 
-% Calculate the tracking error:
+% Calculate the tracking errors, _e_, _e_dot_, and _e_dot_dot_:
 e = theta - theta_d;
 e_dot = theta_dot - dtheta_d;
 e_dot_dot = theta_dot_dot - ddtheta_d;
@@ -87,7 +85,7 @@ v = theta_dot - r;
 %a = q_dot_dot - r
 a = theta_dot_dot - r_dot;
 %%
-% Calculate the controller:
+% Calculate the controller, _u_:
 u = zeros(2,1);
 u = Mmat*a + Cmat*v + Gmat - kv*r;
 %%
@@ -98,6 +96,10 @@ theta_dot_dot = invM*(u - Cmat*theta_dot - Gmat);
 %% 
 % Update the acceleration values:
 A = theta_dot_dot;
+%% Outputs
+% Initialize the output of the function, _dx_:
+dx = zeros(4,1);
+
 %% 
 % Set the final outputs:
 dx(1) = x(3,1);

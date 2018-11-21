@@ -2,10 +2,18 @@
 % This script simulates a non-planar two-link arm tracking a cubic
 % polynomial trajectory with three different tracking controllers: inverse
 % dynamic control, Lyapunov-based Control, and passivity-based control.
+% 
+%% Controller Remarks
 % When an initial error was introduced, it can be concluded that while all three
-% controllers do converge to the desired trajectory, both the
-% Lyapunov-based control and passivity-based control converged much faster
-% than the inverse dynamic control.
+% controllers still converge to the desired trajectory.
+% 
+% Both the Lyapunov-based controller and passivity-based controller 
+% initially converged quicker than the inverse dynamic control, but then
+% took longer to eliminate the small remaining error.
+% 
+% The inverse dynamic controller did not overshoot the desired trajectory
+% and the Lyapunov-based controller and passivity-based controller did 
+% overshoot the desired trajectory when there was some initital error.
 % 
 % Clean up before running anything:
 clc, clear all, close all
@@ -35,16 +43,16 @@ plot_inverseDC = true;
 plot_lyapunov = true;
 plot_passivity = true;
 
-%% Trajectory Generation For Plotting:
+%% Trajectory Generation For Plotting
 % Set time matrix for plotting:
 time = 0:0.001:tf;
-
+%% 
 % Initialize the trajectory maxtrix:
 trajectory = zeros(length(time),2);
 length(time);
 for i = 1:length(time)
     %% 
-    % Grab the time value to use for this iteration:
+    % Grab the time value to use for each iteration:
     t = time(1,i);
     %% 
     % Note _x_ is in the form of _q1_, _q2_, _q1_dot_, _q2_dot_:
@@ -53,7 +61,7 @@ for i = 1:length(time)
     vec_t = [1; t; t^2; t^3];
     theta_d = [a1'*vec_t; a2'*vec_t];
     %% 
-    % Save trajectory joint angles for each time:
+    % Save trajectory joint angles for each iteration:
     trajectory(i,:) = theta_d';
 end
 
@@ -65,7 +73,7 @@ if plot_inverseDC
     % Simulate the tracking controller with no initial error:
     [T,X] = ode45(@(t,x) inverseDC(t, x, a1, a2), [0 tf], x0, options);
     [T_error,X_error] = ode45(@(t,x) inverseDC(t, x, a1, a2), [0 tf], x0_error, options);
-    
+    %%
     % Plot the results of the simulations:
     plotTrajectories(1, 'Inverse Dynamic', time, trajectory(:,1), T, X(:,1), T_error, X_error(:,1));
     plotTrajectories(2, 'Inverse Dynamic', time, trajectory(:,2), T, X(:,2), T_error, X_error(:,2));
@@ -73,25 +81,32 @@ if plot_inverseDC
 end
 if plot_lyapunov
     %% Implement the lyapunov-based control
+    % Set the tolerance options for ODE45 function:
     options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
     [T,X] = ode45(@(t,x) lyapunovCtrl(t, x, a1, a2),[0 tf],x0, options);
-    
-    %plotting
-    plotTrajectories(1, 'lyapunov-based', time, trajectory(:,1), T, X(:,1));
-    plotTrajectories(2, 'lyapunov-based', time, trajectory(:,2), T, X(:,2));
+    [T_error,X_error] = ode45(@(t,x) lyapunovCtrl(t, x, a1, a2), [0 tf], x0_error, options);
+
+    %%
+    % Plot the results of the simulations:
+    plotTrajectories(1, 'lyapunov-based', time, trajectory(:,1), T, X(:,1), T_error, X_error(:,1));
+    plotTrajectories(2, 'lyapunov-based', time, trajectory(:,2), T, X(:,2), T_error, X_error(:,2));
     
 end
 
 if plot_passivity
     %% Implement the passivity-based control
-    %initialize A matrix (joint accelerations) as a global variable
+    % Initialize the A matrix (joint accelerations) as a global variable:
     global A
     A = [0;0];
+    %% 
+    % Set the tolerance options for ODE45 function:
     options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
     [T,X] = ode45(@(t,x) passivityCtrl(t,x, a1, a2),[0 tf],x0, options);
-    
-    %plotting
-    plotTrajectories(1, 'passivity-based', time, trajectory(:,1), T, X(:,1));
-    plotTrajectories(2, 'passivity-based', time, trajectory(:,2), T, X(:,2));
+    [T_error,X_error] = ode45(@(t,x) passivityCtrl(t, x, a1, a2), [0 tf], x0_error, options);
+
+    %%
+    % Plot the results of the simulations:
+    plotTrajectories(1, 'passivity-based', time, trajectory(:,1), T, X(:,1), T_error, X_error(:,1));
+    plotTrajectories(2, 'passivity-based', time, trajectory(:,2), T, X(:,2), T_error, X_error(:,2));
     
 end

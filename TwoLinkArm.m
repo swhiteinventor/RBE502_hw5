@@ -19,8 +19,8 @@ a2 = TwoLinkArmTraj(x0(2), x0(4), xf(2), xf(4), tf, nofigure);
 x0  = [-0.6,0.4,0.15,0.05];
 
 plot_inverseDC = false;
-plot_lyapunov = true;
-plot_passivity = false;
+plot_lyapunov = false;
+plot_passivity = true;
 
 %% trajectory generation for plotting
 
@@ -65,7 +65,10 @@ end
 
 if plot_passivity
     %% Implement the passivity-based control
-    %options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
+    %initialize A matrix (joint accelerations) as a global variable
+    global A
+    A = [0;0];
+    options = odeset('RelTol',1e-4,'AbsTol',[1e-4, 1e-4, 1e-4, 1e-4]);
     [T,X] = ode45(@(t,x) passivityCtrl(t,x, a1, a2),[0 tf],x0, options);
     
     %plotting

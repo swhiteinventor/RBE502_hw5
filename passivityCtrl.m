@@ -1,7 +1,11 @@
 %% Creates the ODE function for a two link planar arm tracking a cubic polynomial trajectory by passivity-based control
 
 function [ dx ] = passivityCtrl( t, x, a1, a2)
+
 %% constants
+
+%sets A as the global A variable (the past joint accelerations)
+global A
 
 % the following parameters for the arm
 I1=10;  I2 = 10; m1=5; r1=.5; m2=5; r2=.5; l1=1; l2=1;
@@ -27,8 +31,11 @@ a2_acc = [2*a2(3), 6*a2(4),0,0 ];
 % compute the desired trajectory (assuming 3rd order polynomials for trajectories)
 dtheta_d =[a1_vel*vec_t; a2_vel* vec_t];
 ddtheta_d =[a1_acc*vec_t; a2_acc* vec_t];
+
+%sets current values
 theta = x(1:2,1);
 theta_dot = x(3:4,1);
+theta_dot_dot = A;
 
 %% planar arm dynamics
 
@@ -49,40 +56,45 @@ invMC = invM*Cmat;
 %initialize output of function
 dx = zeros(4,1);
 
-%% ilyapunov-based ccontroller
+%% passivity-based ccontroller
 
 %gain constant, positive definite matrix
-kd = [5 0; ...
-      0 5];
+kv = [25 0; ...
+      0 25];
   
 %constant, positive definite square matrices
-capital_lambda = [5 0; ...
-                  0 5];
+capital_lambda = [10 0; ...
+                  0 10];
 
 %calculate tracking error
 e = theta - theta_d;
 e_dot = theta_dot - dtheta_d;
-              
-%si calculation
-si_dot = dtheta_d - capital_lambda*e;
-si_dot_dot = ddtheta_d - capital_lambda*e_dot;
+e_dot_dot = theta_dot_dot - ddtheta_d;
 
 %sigma calculation
 I = eye(2,2);
 %sigma = I*e_dot + capital_lambda*e;
-r = theta_dot - si_dot;
+r = e_dot + capital_lambda*e;
+r_dot = e_dot_dot + capital_lambda*e_dot;
 
-%phi is some 
+%calculate v = q_dot - r
+v = theta_dot - r;
+
+%calculate a = q_dot_dot - r
+a = theta_dot_dot - r_dot;
 
 %controller
 u = zeros(2,1);
-u = Mmat*si_dot_dot + Cmat*si_dot + Gmat - kd*r;
+u = Mmat*a + Cmat*v + Gmat - kv*r;
 
 %calculate impact
 theta_dot_dot = zeros(2,1);
 
 %theta_dot_dot = sigma_dot - si_dot_dot
-theta_dot_dot = phi - invMC*r - invM*kd*r + si_dot_dot;
+theta_dot_dot = invM*(u - Cmat*theta_dot - Gmat);
+
+%updates the acceleration values
+A = theta_dot_dot
 
 %final outputs
 dx(1) = x(3,1);
@@ -90,4 +102,4 @@ dx(2) = x(4,1);
 dx(3) = theta_dot_dot(1);
 dx(4) = theta_dot_dot(2);
 
-end1
+end

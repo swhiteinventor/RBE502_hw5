@@ -94,7 +94,7 @@ theta_dot_dot = zeros(2,1);
 theta_dot_dot = invM*(u - Cmat*theta_dot - Gmat);
 
 %updates the acceleration values
-A = theta_dot_dot
+A = theta_dot_dot;
 
 %final outputs
 dx(1) = x(3,1);

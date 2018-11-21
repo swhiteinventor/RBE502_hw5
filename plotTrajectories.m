@@ -5,7 +5,7 @@
 function plotTrajectories(theta, control, time, trajectory, T, X)
 
 %creates name of plot
-name = sprintf('Angle %d Under %s Control', theta, control);
+name = sprintf('Theta %d Under %s Control', theta, control);
 
 %creates figure
 figure('Name',name);

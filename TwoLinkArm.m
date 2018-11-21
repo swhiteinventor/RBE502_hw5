@@ -18,8 +18,8 @@ a2 = TwoLinkArmTraj(x0(2), x0(4), xf(2), xf(4), tf, nofigure);
 
 x0  = [-0.6,0.4,0.15,0.05];
 
-plot_inverseDC = false;
-plot_lyapunov = false;
+plot_inverseDC = true;
+plot_lyapunov = true;
 plot_passivity = true;
 
 %% trajectory generation for plotting

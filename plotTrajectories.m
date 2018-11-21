@@ -3,29 +3,30 @@
 % on the input angle number and the input control method.
 
 function plotTrajectories(theta, control, time, trajectory, T, X, T_error, X_error)
-
-%creates name of plot
+%% 
+% Creates name of the plot:
 name = sprintf('Theta %d Under %s Control', theta, control);
-
-%creates figure
+%% 
+% Creates the figure:
 figure('Name',name);
-hold on
-
-%plots trajectories
+hold on 
+% Plot the trajectories:
 plot(time, trajectory, ...
     'b', ...
+    'LineWidth', 2, ... 
     'DisplayName', sprintf('Desired Trajectory: Theta %d', theta));
 plot(T, X, ...
-    'r-', ...
+    'g--', ...
+    'LineWidth', 2, ...
     'DisplayName', sprintf('Tracked Trajectory: Theta %d', theta));
 plot(T_error, X_error, ...
-    'r-', ...
-    'DisplayName', sprintf('Tracked Trajectory with Initial Error: Theta %d', theta));
-
-%sets lables
+    'r:', ...
+    'LineWidth', 2, ...
+    'DisplayName', sprintf('Tracked Trajectory with Initial Error: Theta %d', theta)); 
+% Sets lables:
 title(name);
 xlabel('Time (s)');
 ylabel(sprintf('Theta %d (radians)', theta));
-legend;
+legend('location', 'northwest');
 
 end

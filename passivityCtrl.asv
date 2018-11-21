@@ -90,16 +90,17 @@ a = theta_dot_dot - r_dot;
 % Calculate the controller:
 u = zeros(2,1);
 u = Mmat*a + Cmat*v + Gmat - kv*r;
-%%
-% Calculate the acceleration values:
+
+%calculate impact
 theta_dot_dot = zeros(2,1);
-% theta_dot_dot = sigma_dot - si_dot_dot
+
+%theta_dot_dot = sigma_dot - si_dot_dot
 theta_dot_dot = invM*(u - Cmat*theta_dot - Gmat);
-%% 
-% Update the acceleration values:
+
+%updates the acceleration values
 A = theta_dot_dot;
-%% 
-% Set the final outputs:
+
+%final outputs
 dx(1) = x(3,1);
 dx(2) = x(4,1);
 dx(3) = theta_dot_dot(1);
